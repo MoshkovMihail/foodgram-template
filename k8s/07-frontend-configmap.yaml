@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-nginx-config
+  namespace: mmproject
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+        client_max_body_size 10M;
+
+        resolver kube-dns.kube-system.svc.cluster.local valid=10s ipv6=off;
+        set $backend "backend-service";
+
+        location /api/ {
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_pass http://$backend:8000$request_uri;
+        }
+
+        location /admin/ {
+            proxy_set_header Host $http_host;
+            proxy_pass http://$backend:8000$request_uri;
+        }
+
+        location ~ ^/s/[^/]+/?$ {
+            proxy_set_header Host $http_host;
+            proxy_pass http://$backend:8000$request_uri;
+        }
+
+        location /media/ {
+            proxy_set_header Host $http_host;
+            proxy_pass http://$backend:8000$request_uri;
+        }
+
+        location /static/admin/ {
+            proxy_set_header Host $http_host;
+            proxy_pass http://$backend:8000$request_uri;
+        }
+
+        location /static/rest_framework/ {
+            proxy_set_header Host $http_host;
+            proxy_pass http://$backend:8000$request_uri;
+        }
+
+        location /api/docs/ {
+            root /usr/share/nginx/html;
+            try_files $uri $uri/redoc.html;
+        }
+
+        location /static/ {
+            root /usr/share/nginx/html;
+            try_files $uri $uri/ =404;
+        }
+
+        location / {
+            root /usr/share/nginx/html;
+            index index.html;
+            try_files $uri $uri/index.html $uri/ /index.html;
+        }
+    }
