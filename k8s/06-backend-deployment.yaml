@@ -20,7 +20,7 @@ spec:
           image: foodgram-backend:latest
           imagePullPolicy: Never
           command: ["python", "manage.py", "migrate", "--noinput"]
-          envFrom:
+          envFrom: &env-from
             - configMapRef:
                 name: foodgram-config
             - secretRef:
@@ -31,8 +31,5 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 8000
-          envFrom:
-            - configMapRef:
-                name: foodgram-config
-            - secretRef:
-                name: foodgram-secret
+          envFrom: *env-from
+          
