@@ -32,4 +32,11 @@ spec:
           ports:
             - containerPort: 8000
           envFrom: *env-from
+          volumeMounts:
+            - name: media
+              mountPath: /app/collected_media
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: backend-media
           
