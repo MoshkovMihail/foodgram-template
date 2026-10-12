@@ -1,9 +1,9 @@
-# build env
-FROM node:21.7.1-alpine
+FROM node:21.7.1-alpine AS build
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . ./
-RUN npm run build
-RUN mkdir -p /app/result_build
-RUN cp -r build/* /app/result_build/
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+COPY . .
+RUN yarn build
+FROM nginx:1.25-alpine
+COPY --from=build /app/build /usr/share/nginx/html
+EXPOSE 80

@@ -9,6 +9,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN python manage.py collectstatic --noinput
+
 RUN mkdir -p /app/backend_media && chmod 777 /app/backend_media && python3 manage.py collectstatic --noinput
 
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi"]
