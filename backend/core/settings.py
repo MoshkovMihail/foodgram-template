@@ -54,8 +54,14 @@ CORS_URLS_REGEX = r"^/api/.*$"
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost",
+    "https://foodgram.k8s.local",
+    "https://api.foodgram.k8s.local",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://foodgram.k8s.local",
+    "https://api.foodgram.k8s.local",
+]
 ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
