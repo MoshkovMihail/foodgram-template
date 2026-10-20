@@ -16,6 +16,7 @@ spec:
         app: backend
     spec:
       initContainers:
+        # Миграции БД
         - name: migrate
           image: foodgram-backend:latest
           imagePullPolicy: Never
@@ -25,6 +26,26 @@ spec:
                 name: foodgram-config
             - secretRef:
                 name: foodgram-secret
+        # Воркер для медиа (скрипт)
+        - name: init-media
+          image: foodgram-backend:latest
+          imagePullPolicy: Never
+          command: 
+            - "/bin/sh"
+            - "-c"
+            - "mkdir -p /app/collected_media && chmod -R 777 /app/collected_media && echo 'Media worker script done'"
+          volumeMounts:
+            - name: media
+              mountPath: /app/collected_media
+        # Сборка статики в отдельную папку
+        - name: collect-static
+          image: foodgram-backend:latest
+          imagePullPolicy: Never
+          command: ["python", "manage.py", "collectstatic", "--noinput"]
+          envFrom: *env-from
+          volumeMounts:
+            - name: static
+              mountPath: /app/collected_static
       containers:
         - name: backend
           image: foodgram-backend:latest
@@ -35,8 +56,12 @@ spec:
           volumeMounts:
             - name: media
               mountPath: /app/collected_media
+            - name: static
+              mountPath: /app/collected_static
       volumes:
         - name: media
           persistentVolumeClaim:
             claimName: backend-media
-          
+        - name: static
+          persistentVolumeClaim:
+            claimName: backend-static
