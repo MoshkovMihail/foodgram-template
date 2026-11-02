@@ -26,6 +26,10 @@ spec:
                 name: foodgram-config
             - secretRef:
                 name: foodgram-secret
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
         # Воркер для медиа (скрипт)
         - name: init-media
           image: foodgram-backend:latest
@@ -37,6 +41,10 @@ spec:
           volumeMounts:
             - name: media
               mountPath: /app/collected_media
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
         # Сборка статики в отдельную папку
         - name: collect-static
           image: foodgram-backend:latest
@@ -46,6 +54,10 @@ spec:
           volumeMounts:
             - name: static
               mountPath: /app/collected_static
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
       containers:
         - name: backend
           image: foodgram-backend:latest
@@ -58,6 +70,10 @@ spec:
               mountPath: /app/collected_media
             - name: static
               mountPath: /app/collected_static
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
       volumes:
         - name: media
           persistentVolumeClaim:
