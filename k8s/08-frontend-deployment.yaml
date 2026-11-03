@@ -15,30 +15,44 @@ spec:
       labels:
         app: foodgram-frontend
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
       containers:
         - name: frontend
           image: foodgram-frontend:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           volumeMounts:
             - name: nginx-config
               mountPath: /etc/nginx/conf.d/default.conf
               subPath: nginx.conf
               readOnly: true
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /var/run
           readinessProbe:
             httpGet:
               path: /
-              port: 80
+              port: 8080
             initialDelaySeconds: 3
             periodSeconds: 5
           livenessProbe:
             httpGet:
               path: /
-              port: 80
+              port: 8080
             initialDelaySeconds: 10
             periodSeconds: 10
       volumes:
         - name: nginx-config
           configMap:
             name: frontend-nginx-config
+        - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}
