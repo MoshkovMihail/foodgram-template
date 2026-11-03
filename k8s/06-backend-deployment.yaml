@@ -42,9 +42,9 @@ spec:
             - name: media
               mountPath: /app/collected_media
           securityContext:
-            runAsUser: 1000
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
+            runAsUser: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: true
         # Сборка статики в отдельную папку
         - name: collect-static
           image: foodgram-backend:latest
