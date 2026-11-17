@@ -21,7 +21,10 @@ spec:
       initContainers:
         - name: fix-permissions
           image: postgres:14
-          command: ["sh", "-c", "chown -R 999:999 /var/lib/postgresql/data && chmod 700 /var/lib/postgresql/data/pgdata"]
+          command: 
+            - "sh" 
+            - "-c" 
+            - "mkdir -p /var/lib/postgresql/data/pgdata && chown -R 999:999 /var/lib/postgresql/data && chmod 700 /var/lib/postgresql/data/pgdata"
           securityContext:
             runAsUser: 0
           volumeMounts:

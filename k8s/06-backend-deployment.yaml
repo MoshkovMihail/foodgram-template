@@ -15,11 +15,12 @@ spec:
       labels:
         app: backend
     spec:
+      securityContext:
+        fsGroup: 1000
       initContainers:
         # Миграции БД
         - name: migrate
-          image: foodgram-backend:latest
-          imagePullPolicy: Never
+          image: cr.yandex/crpqbnmmop1pe2c5f0ij/foodgram-backend:latest
           command: ["python", "manage.py", "migrate", "--noinput"]
           envFrom: &env-from
             - configMapRef:
@@ -32,8 +33,7 @@ spec:
             allowPrivilegeEscalation: false
         # Воркер для медиа (скрипт)
         - name: init-media
-          image: foodgram-backend:latest
-          imagePullPolicy: Never
+          image: cr.yandex/crpqbnmmop1pe2c5f0ij/foodgram-backend:latest
           command: 
             - "/bin/sh"
             - "-c"
@@ -47,8 +47,7 @@ spec:
             allowPrivilegeEscalation: true
         # Сборка статики в отдельную папку
         - name: collect-static
-          image: foodgram-backend:latest
-          imagePullPolicy: Never
+          image: cr.yandex/crpqbnmmop1pe2c5f0ij/foodgram-backend:latest
           command: ["python", "manage.py", "collectstatic", "--noinput"]
           envFrom: *env-from
           volumeMounts:
@@ -60,8 +59,7 @@ spec:
             allowPrivilegeEscalation: false
       containers:
         - name: backend
-          image: foodgram-backend:latest
-          imagePullPolicy: Never
+          image: cr.yandex/crpqbnmmop1pe2c5f0ij/foodgram-backend:latest
           ports:
             - containerPort: 8000
           envFrom: *env-from

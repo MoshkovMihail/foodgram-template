@@ -21,7 +21,7 @@ spec:
         runAsGroup: 101
       containers:
         - name: frontend
-          image: foodgram-frontend:latest
+          image: cr.yandex/crpqbnmmop1pe2c5f0ij/foodgram-frontend:latest
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
