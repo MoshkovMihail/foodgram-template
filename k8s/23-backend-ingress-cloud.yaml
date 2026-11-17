@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: foodgram-backend-ingress
+  namespace: mmproject
+  annotations:
+    gwin.yandex.cloud/groupName: "foodgram-group"
+    gwin.yandex.cloud/security-group-ids: "enposq24j75vo9b5vncu"
+    gwin.yandex.cloud/subnet-id: "e9b5esvbu3qfnu0m4pq1"
+    cert-manager.io/cluster-issuer: "letsencrypt"
+spec:
+  ingressClassName: gwin
+  tls:
+    - hosts:
+        - api.foodgramm.cc.cd
+      secretName: foodgram-backend-tls
+  rules:
+    - host: api.foodgramm.cc.cd
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service
+                port:
+                  number: 8000
