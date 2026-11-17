@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  namespace: mmproject
+  annotations:
+    cert-manager.io/cluster-issuer: "selfsigned-issuer"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - foodgram.k8s.local
+      secretName: frontend-tls
+  rules:
+    - host: foodgram.k8s.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: foodgram-frontend
+                port:
+                  number: 80

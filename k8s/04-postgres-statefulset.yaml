@@ -14,25 +14,45 @@ spec:
       labels:
         app: postgres
     spec:
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
+      initContainers:
+        - name: fix-permissions
+          image: postgres:14
+          command: ["sh", "-c", "chown -R 999:999 /var/lib/postgresql/data && chmod 700 /var/lib/postgresql/data/pgdata"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
       containers:
-      - name: postgres
-        image: postgres:14
-        ports:
-          - containerPort: 5432
-        envFrom:
-          - configMapRef:
-              name: foodgram-config
-          - secretRef:
-              name: foodgram-secret
-        volumeMounts:
-        - name: postgres-data
-          mountPath: /var/lib/postgresql/data
-          subPath: pgdata
+        - name: postgres
+          image: postgres:14
+          ports:
+            - containerPort: 5432
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          envFrom:
+            - configMapRef:
+                name: foodgram-config
+            - secretRef:
+                name: foodgram-secret
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
   volumeClaimTemplates:
-  - metadata:
-      name: postgres-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 1Gi
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi

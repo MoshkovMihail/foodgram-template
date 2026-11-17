@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-policy
+  namespace: mmproject
+spec:
+  podSelector:
+    matchLabels:
+      app: foodgram-frontend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Разрешаем входящий трафик только от Ingress-контроллера
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    # Разрешаем исходящий трафик к бэкенду
+    - to:
+        - podSelector:
+            matchLabels:
+              app: backend
+      ports:
+        - protocol: TCP
+          port: 8000
+    # Разрешаем DNS-запросы (чтобы фронт мог найти api.foodgram.k8s.local)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
