@@ -21,7 +21,7 @@ spec:
         runAsUser: 1000
       containers:
         - name: watcher
-          image: pod-watcher:latest
+          image: cr.yandex/crpqbnmmop1pe2c5f0ij/pod-watcher:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: POD_NAMESPACE
